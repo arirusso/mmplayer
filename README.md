@@ -9,7 +9,7 @@ require "mmplayer"
 
 @input = UniMIDI::Input.gets
 
-@player = MMPlayer.new(@input, "-fs -vo corevideo:device_id=1") do
+@player = MMPlayer.new(@input, :flags => "-fs") do
 
   channel 0
 
