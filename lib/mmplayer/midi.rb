@@ -22,7 +22,7 @@ module MMPlayer
       @config[:cc][num] = callback
     end
 
-    def start(options = {})
+    def start
       @listener.on_message(:channel => @channel, :class => MIDIMessage::NoteOn) do |event|
         message = event[:message]
         @config[:note][message.note].call(message.velocity)
@@ -31,7 +31,7 @@ module MMPlayer
         message = event[:message]
         @config[:cc][message.note].call(message.value)
       end
-      @listener.start(:background => options[:background])
+      @listener.start(:background => true)
     end
 
   end
