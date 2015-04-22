@@ -26,6 +26,18 @@ module MMPlayer
       Scale.transform(num).from(0..127).to(0..100)
     end
 
+    def method_missing(method, *args, &block)
+      if @player.respond_to?(method)
+        @player.send(method, *args, &block)
+      else
+        super
+      end
+    end
+
+    def respond_to_missing?(method, include_private = false)
+      super || @player.respond_to?(method)
+    end
+
   end
 
 end
