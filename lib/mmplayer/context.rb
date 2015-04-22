@@ -17,11 +17,8 @@ module MMPlayer
       @midi.channel = num
     end
 
-    def start
-      @midi.start
-      @midi.listener.join
-      #loop until @player.active?
-      #loop while @player.active?
+    def start(options = {})
+      @midi.start(options)
     end
 
     def percent(num)
