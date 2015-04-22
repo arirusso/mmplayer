@@ -20,6 +20,7 @@ module MMPlayer
     def start
       @midi.start
       loop until @player.active?
+      loop while @player.active?
     end
 
     def percent(num)
