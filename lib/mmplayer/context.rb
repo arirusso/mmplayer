@@ -7,9 +7,9 @@ module MMPlayer
     def_delegators :@midi, :cc, :note
     def_delegators :@player, :active?, :play, :repeat
 
-    def initialize(midi_input, command_line_options, &block)
+    def initialize(midi_input, options = {}, &block)
       @midi = MIDI.new(midi_input)
-      @player = Player.new(command_line_options)
+      @player = Player.new(:flags => options[:flags])
       instance_eval(&block) if block_given?
     end
 
@@ -19,8 +19,9 @@ module MMPlayer
 
     def start
       @midi.start
-      loop until @player.active?
-      loop while @player.active?
+      @midi.listener.join
+      #loop until @player.active?
+      #loop while @player.active?
     end
 
     def percent(num)

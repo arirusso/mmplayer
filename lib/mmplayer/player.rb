@@ -2,31 +2,24 @@ module MMPlayer
 
   class Player
 
-    def initialize(command_line_options)
-      @start_options = "#{command_line_options.to_s} -fixed-vo -idle"
+    def initialize(options = {})
+      @flags = "-fixed-vo -idle"
+      @flags += " #{options[:flags]}" unless options[:flags].nil?
     end
 
     def play(file)
-      player(:file => file).load_file(file)
+      ensure_player(file)
+      @player.load_file(file) unless @player.nil?
     end
 
     def active?
-      !player.nil? && !player.stdout.gets.nil?
-    end
-
-    def repeat
-      @player_options[:repeat] = true
+      !@player.nil? && !@player.stdout.gets.nil?
     end
 
     private
 
-    def player(options = {})
-      if @player.nil?
-        unless (file = options[:file]).nil?
-          @player = MPlayer::Slave.new(file, :options => @start_options)
-        end
-      end
-      @player
+    def ensure_player(file)
+      @player ||= MPlayer::Slave.new(file, :options => @flags)
     end
 
   end
