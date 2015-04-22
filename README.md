@@ -17,7 +17,7 @@ require "mmplayer"
   note(2) { play("2.mov") }
 
   cc(1) { |value| volume(:set, value) }
-  cc(20) { |value| seek(percent(value), :percent) }
+  cc(20) { |value| seek(to_percent(value), :percent) }
 
 end
 
