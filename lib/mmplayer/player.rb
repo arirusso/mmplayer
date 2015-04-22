@@ -16,6 +16,26 @@ module MMPlayer
       !@player.nil? && !@player.stdout.gets.nil?
     end
 
+    def progress
+      time = {
+        :length => nil,
+        :position => nil
+      }
+      while time.values.compact.count < 2
+        thread = Thread.new do
+          time[:length] = @player.get("time_length").strip.to_f
+          time[:position] = @player.get("time_pos").strip.to_f
+        end
+        if time.values.compact.count < 2
+          thread.kill
+          sleep(0.005)
+        end
+      end
+      time[:percent] = ((time[:position] / time[:length]) * 100).round
+      time
+    end
+
+
     def method_missing(method, *args, &block)
       if @player.respond_to?(method)
         @player.send(method, *args, &block)
