@@ -25,7 +25,7 @@ module MMPlayer
     def start
       @listener.on_message(:channel => @channel, :class => MIDIMessage::NoteOn) do |event|
         message = event[:message]
-        @config[:note][message.note].call(message.note)
+        @config[:note][message.note].call(message.velocity)
       end
       @listener.on_message(:channel => @channel, :class => MIDIMessage::ControlChange) do |event|
         message = event[:message]
