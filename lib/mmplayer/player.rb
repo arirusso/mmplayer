@@ -3,7 +3,7 @@ module MMPlayer
   class Player
 
     def initialize(command_line_options)
-      @start_options = command_line_options
+      @start_options = "#{command_line_options.to_s} -fixed-vo -idle"
     end
 
     def play(file)
