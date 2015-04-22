@@ -12,11 +12,12 @@ require "scale"
 require "unimidi"
 
 # modules
-require "mmplayer/midi"
-require "mmplayer/player"
+require "mmplayer/numbers"
 
 # classes
 require "mmplayer/context"
+require "mmplayer/midi"
+require "mmplayer/player"
 
 module MMPlayer
 

@@ -2,6 +2,7 @@ module MMPlayer
 
   class Context
 
+    include Numbers
     extend Forwardable
 
     def_delegators :@midi, :cc, :note
@@ -18,11 +19,12 @@ module MMPlayer
     end
 
     def start(options = {})
-      @midi.start(options)
-    end
-
-    def percent(num)
-      Scale.transform(num).from(0..127).to(0..100)
+      @midi.start
+      loop until @player.active?
+      while @player.active?
+        sleep(0.005)
+        #puts @player.progress
+      end
     end
 
     def method_missing(method, *args, &block)
