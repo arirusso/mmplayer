@@ -2,33 +2,28 @@ module MMPlayer
 
   class Context
 
-    include MIDI
-    include Numbers
-    include Player
+    extend Forwardable
 
-    def initialize(midi_input, player_options = {}, &block)
-      @midi_input = midi_input
-      @player_options = {
-        :start => player_options
-      }
+    def_delegators :@midi, :cc, :note
+    def_delegators :@player, :active?, :play, :repeat
+
+    def initialize(midi_input, command_line_options, &block)
+      @midi = MIDI.new(midi_input)
+      @player = Player.new(command_line_options)
       instance_eval(&block) if block_given?
     end
 
+    def channel(num)
+      @midi.channel = num
+    end
+
     def start
-      start_midi
-      loop until player
+      @midi.start
+      loop until @player.active?
     end
 
-    def method_missing(method, *args, &block)
-      if player.respond_to?(method)
-        player.send(method, *args, &block)
-      else
-        super
-      end
-    end
-
-    def respond_to_missing?(method, include_private = false)
-      super || player.respond_to?(method)
+    def percent(num)
+      Scale.transform(num).from(0..127).to(0..100)
     end
 
   end

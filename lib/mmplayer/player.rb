@@ -1,6 +1,10 @@
 module MMPlayer
 
-  module Player
+  class Player
+
+    def initialize(command_line_options)
+      @start_options = command_line_options
+    end
 
     def play(file)
       player(:file => file).load_file(file)
@@ -11,11 +15,7 @@ module MMPlayer
     end
 
     def repeat
-      if player.nil?
-        @player_options[:repeat] = true
-      else
-        player.loop(:forever)
-      end
+      @player_options[:repeat] = true
     end
 
     private
@@ -23,9 +23,7 @@ module MMPlayer
     def player(options = {})
       if @player.nil?
         unless (file = options[:file]).nil?
-          @player = MPlayer::Slave.new(file, @player_options[:start])
-          repeat unless @player_options[:repeat].nil?
-          @player_options = nil
+          @player = MPlayer::Slave.new(file, :options => @start_options)
         end
       end
       @player

@@ -1,4 +1,5 @@
 # libs
+require "forwardable"
 require "midi-eye"
 require "mplayer-ruby"
 require "scale"
@@ -6,7 +7,6 @@ require "unimidi"
 
 # modules
 require "mmplayer/midi"
-require "mmplayer/numbers"
 require "mmplayer/player"
 
 # classes

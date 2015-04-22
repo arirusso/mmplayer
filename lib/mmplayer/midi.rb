@@ -1,42 +1,45 @@
 module MMPlayer
 
-  module MIDI
+  class MIDI
 
-    def channel(num)
-      @channel = num
+    attr_accessor :channel
+
+    def initialize(input)
+      @channel = nil
+      @input = input
     end
 
     def note(num, &callback)
-      midi_config[:note][num] = callback
+      config[:note][num] = callback
     end
 
     def cc(num, &callback)
-      midi_config[:cc][num] = callback
+      config[:cc][num] = callback
+    end
+
+    def start
+      listener.on_message(:channel => @channel, :class => MIDIMessage::NoteOn) do |event|
+        message = event[:message]
+        config[:note][message.note].call(message.note)
+      end
+      listener.on_message(:channel => @channel, :class => MIDIMessage::ControlChange) do |event|
+        message = event[:message]
+        config[:cc][message.note].call(message.value)
+      end
+      listener.start(:background => true)
     end
 
     private
 
-    def midi_config
+    def config
       @config ||= {
         :note => {},
         :cc => {}
       }
     end
 
-    def start_midi
-      listener.on_message(:channel => @channel, :class => MIDIMessage::NoteOn) do |event|
-        message = event[:message]
-        midi_config[:note][message.note].call(message.note)
-      end
-      listener.on_message(:channel => @channel, :class => MIDIMessage::ControlChange) do |event|
-        message = event[:message]
-        @midi_options[:cc][message.note].call(message.value)
-      end
-      listener.start(:background => true)
-    end
-
     def listener
-      @listener ||= MIDIEye::Listener.new(@midi_input)
+      @listener ||= MIDIEye::Listener.new(@input)
     end
 
   end
