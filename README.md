@@ -9,9 +9,9 @@ require "mmplayer"
 
 @input = UniMIDI::Input.gets
 
-@player = MMPlayer.new(@input, :flags => "-fs") do
+@player = MMPlayer.new(@input, :mplayer_flags => "-fs") do
 
-  channel 0
+  rx_channel 0
 
   note(1) { play("1.mov") }
   note(2) { play("2.mov") }
