@@ -24,3 +24,13 @@ end
 @player.start
 
 ```
+
+##Author
+
+* [Ari Russo](http://github.com/arirusso) <ari.russo at gmail.com>
+
+##License
+
+Apache 2.0, See LICENSE file
+
+Copyright (c) 2015 [Ari Russo](http://arirusso.com)

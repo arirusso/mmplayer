@@ -1,3 +1,9 @@
+# MMPlayer
+# Control MPlayer with MIDI
+#
+# (c)2015 Ari Russo
+# Apache 2.0 License
+
 # libs
 require "forwardable"
 require "midi-eye"
