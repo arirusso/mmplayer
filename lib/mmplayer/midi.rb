@@ -3,7 +3,7 @@ module MMPlayer
   class MIDI
 
     attr_accessor :channel
-    attr_reader :config
+    attr_reader :config, :listener
 
     def initialize(input)
       @channel = nil
