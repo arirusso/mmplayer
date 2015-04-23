@@ -50,6 +50,25 @@ class MMPlayer::PlayerTest < Minitest::Test
 
     end
 
+    context "#poll_mplayer_value" do
+
+      setup do
+        @mplayer.expects(:get).once.returns("0.1\n")
+      end
+
+      teardown do
+        @mplayer.unstub(:get)
+      end
+
+      should "convert string to float" do
+        val = @player.send(:poll_mplayer_value, "key")
+        refute_nil val
+        assert_equal Float, val.class
+        assert_equal 0.1, val
+      end
+
+    end
+
     context "#play" do
 
       setup do
@@ -70,5 +89,5 @@ class MMPlayer::PlayerTest < Minitest::Test
     end
 
   end
-  
+
 end
