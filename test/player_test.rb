@@ -81,6 +81,33 @@ class MMPlayer::PlayerTest < Minitest::Test
 
     end
 
+    context "#progress" do
+
+      setup do
+        @mplayer.expects(:get).twice.returns("0.1\n")
+        @report = @player.send(:progress)
+      end
+
+      teardown do
+        @mplayer.unstub(:get)
+      end
+
+      should "have position and length" do
+        refute_nil @report
+        refute_nil @report[:length]
+        refute_nil @report[:position]
+        assert_equal 0.1, @report[:length]
+        assert_equal 0.1, @report[:position]
+      end
+
+      should "have percentage" do
+        refute_nil @report
+        refute_nil @report[:percent]
+        assert_equal 100, @report[:percent]
+      end
+
+    end
+
     context "#poll_mplayer_value" do
 
       setup do
