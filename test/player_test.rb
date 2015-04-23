@@ -50,6 +50,26 @@ class MMPlayer::PlayerTest < Minitest::Test
 
     end
 
+    context "#poll_mplayer_progress" do
+
+      setup do
+        @mplayer.expects(:get).twice.returns("0.1\n")
+      end
+
+      teardown do
+        @mplayer.unstub(:get)
+      end
+
+      should "generate progress report" do
+        report = @player.send(:poll_mplayer_progress)
+        refute_nil report
+        assert_equal Hash, report.class
+        assert_equal 2, report.size
+        assert report.values.all? { |v| v == 0.1 }
+      end
+
+    end
+
     context "#get_percentage" do
 
       should "calcuate percentage" do
