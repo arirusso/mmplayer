@@ -76,7 +76,7 @@ module MMPlayer
           Thread.main.raise(exception)
         end
       end
-      sleep(0.001)
+      sleep(0.1)
       thread.kill
       time
     end
