@@ -56,30 +56,31 @@ module MMPlayer
 
     private
 
+    # Get progress percentage from the MPlayer report
     def get_percentage(report)
       percent = (report[:position] / report[:length]) * 100
       percent.round
     end
 
+    # Poll MPlayer for progress information
     def poll_mplayer_progress
-      time = {
-        :length => nil,
-        :position => nil
-      }
-      while time.values.compact.count < 2
-        thread = Thread.new do
-          time[:length] = poll_mplayer_value("time_length")
-          time[:position] = poll_mplayer_value("time_pos")
+      time = nil
+      thread = Thread.new do
+        begin
+          time = {
+            :length => poll_mplayer_value("time_length"),
+            :position => poll_mplayer_value("time_pos")
+          }
+        rescue Exception => exception
+          Thread.main.raise(exception)
         end
-        if time.values.compact.count < 2
-          thread.kill
-          sleep(0.005)
-        end
-        thread.kill
       end
+      sleep(0.001)
+      thread.kill
       time
     end
 
+    # Poll a single MPlayer value for the given key
     def poll_mplayer_value(key)
       @player.get(key).strip.to_f
     end
