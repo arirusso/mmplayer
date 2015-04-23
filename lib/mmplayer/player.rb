@@ -72,10 +72,14 @@ module MMPlayer
 
     private
 
+    # Sweep message threads
     def cleanup_messages
-      unless @mplayer_messages.empty?
+      if @mplayer_messages.empty?
+        false
+      else
         sleep(0.01)
         @mplayer_messages.each(&:kill)
+        true
       end
     end
 
