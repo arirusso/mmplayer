@@ -23,19 +23,12 @@ module MMPlayer
     # @option options [Boolean] :background Whether to run in a background thread
     # @return [Boolean]
     def start(options = {})
-      if !!options[:background]
-        @player_thread = Thread.new do
-          begin
-            activate
-          rescue Exception => exception
-            Thread.main.raise(exception)
-          end
-        end
-        true
-      else
-        activate
-        true
+      @midi.start
+      unless !!options[:background]
+        loop { sleep(0.1) } until @player.active?
+        loop { sleep(0.1) } while @player.active?
       end
+      true
     end
 
     def progress(&block)
@@ -48,22 +41,6 @@ module MMPlayer
       @midi.stop
       @player.quit
       @player_thread.kill unless @player_thread.nil?
-      true
-    end
-
-    private
-
-    # Start the player
-    # @return [Boolean]
-    def activate
-      @midi.start
-      loop until @player.active?
-      while @player.active?
-        sleep(0.5)
-        unless @progress_callback.nil? || (progress = @player.progress).nil?
-          @progress_callback.call(progress)
-        end
-      end
       true
     end
 
