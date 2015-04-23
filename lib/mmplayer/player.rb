@@ -5,6 +5,7 @@ module MMPlayer
     # @param [Hash] options
     # @option options [String] :flags MPlayer command-line flags to use on startup
     def initialize(options = {})
+      @mplayer_messages = []
       @flags = "-fixed-vo -idle"
       @flags += " #{options[:flags]}" unless options[:flags].nil?
     end
@@ -46,16 +47,37 @@ module MMPlayer
     # Shortcut to send a message to the MPlayer
     # @return [Object]
     def mplayer_send(method, *args, &block)
-      @player.send(method, *args, &block)
+      if @player.nil? && MPlayer::Slave.method_defined?(method)
+        # warn
+      else
+        cleanup_messages
+        thread = Thread.new do
+          begin
+            @player.send(method, *args, &block)
+          rescue Exception => exception
+            Thread.main.raise(exception)
+          end
+        end
+        thread.abort_on_exception = true
+        @mplayer_messages << thread
+      end
     end
 
     # Does the MPlayer respond to the given message?
     # @return [Boolean]
     def mplayer_respond_to?(method, include_private = false)
-      @player.respond_to?(method)
+      (@player.nil? && MPlayer::Slave.method_defined?(method)) ||
+        @player.respond_to?(method)
     end
 
     private
+
+    def cleanup_messages
+      unless @mplayer_messages.empty?
+        sleep(0.01)
+        @mplayer_messages.each(&:kill)
+      end
+    end
 
     # Get progress percentage from the MPlayer report
     def get_percentage(report)
@@ -65,6 +87,7 @@ module MMPlayer
 
     # Poll MPlayer for progress information
     def poll_mplayer_progress
+      cleanup_messages
       time = nil
       thread = Thread.new do
         begin
@@ -76,8 +99,7 @@ module MMPlayer
           Thread.main.raise(exception)
         end
       end
-      sleep(0.1)
-      thread.kill
+      @mplayer_messages << thread
       time
     end
 
@@ -90,7 +112,16 @@ module MMPlayer
     # @param [String] file The media file to invoke MPlayer with
     # @return [MPlayer::Slave]
     def ensure_player(file)
-      @player ||= MPlayer::Slave.new(file, :options => @flags)
+      if @player.nil?
+        @player_thread = Thread.new do
+          begin
+            @player = MPlayer::Slave.new(file, :options => @flags)
+          rescue Exception => exception
+            Thread.main.raise(exception)
+          end
+        end
+        @player_thread.abort_on_exception = true
+      end
     end
 
   end
