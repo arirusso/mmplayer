@@ -35,11 +35,12 @@ module MMPlayer
     #  :position => 40.1
     # }
     # Length and position are in seconds
-    # @return [Hash]
+    # @return [Hash, nil]
     def progress
-      time = poll_mplayer_progress
-      time[:percent] = get_percentage(time)
-      time
+      unless (time = poll_mplayer_progress).nil?
+        time[:percent] = get_percentage(time)
+        time
+      end
     end
 
     # Shortcut to send a message to the MPlayer
