@@ -68,8 +68,8 @@ module MMPlayer
       }
       while time.values.compact.count < 2
         thread = Thread.new do
-          time[:length] = @player.get("time_length").strip.to_f
-          time[:position] = @player.get("time_pos").strip.to_f
+          time[:length] = poll_mplayer_value("time_length")
+          time[:position] = poll_mplayer_value("time_pos")
         end
         if time.values.compact.count < 2
           thread.kill
@@ -78,6 +78,10 @@ module MMPlayer
         thread.kill
       end
       time
+    end
+
+    def poll_mplayer_value(key)
+      @player.get(key).strip.to_f
     end
 
     # Ensure that the MPlayer process is invoked
