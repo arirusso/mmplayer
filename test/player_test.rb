@@ -53,30 +53,22 @@ class MMPlayer::PlayerTest < Minitest::Test
     context "#play" do
 
       setup do
+        @player.expects(:ensure_player).once
+        @mplayer.expects(:load_file).once
       end
 
-      should "lazily invoke mplayer" do
-
+      teardown do
+        @player.unstub(:ensure_player)
+        @mplayer.unstub(:load_file)
       end
 
-      should "send video to mplayer to play" do
+      should "lazily invoke mplayer and play" do
+        assert @player.play("file.mov")
+        refute_nil @player.instance_variable_get("@player")
       end
-
-    end
-
-    context "#active?" do
-
-      should "return false when mplayer hasn't been invoked" do
-      end
-
-      should "return true when mplayer is initialized" do
-      end
-
-    end
-
-    context "#progress" do
 
     end
 
   end
+  
 end
