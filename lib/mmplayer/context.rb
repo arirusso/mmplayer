@@ -38,6 +38,10 @@ module MMPlayer
       end
     end
 
+    def progress(&block)
+      @progress_callback = block
+    end
+
     # Stop the player
     # @return [Boolean]
     def stop
@@ -55,8 +59,10 @@ module MMPlayer
       @midi.start
       loop until @player.active?
       while @player.active?
-        sleep(0.005)
-        #puts @player.progress
+        sleep(0.5)
+        unless @progress_callback.nil? || (progress = @player.progress).nil?
+          @progress_callback.call(progress)
+        end
       end
       true
     end
