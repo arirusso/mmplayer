@@ -5,20 +5,21 @@ class MMPlayer::PlayerTest < Minitest::Test
   context "Player" do
 
     setup do
+      class MPlayer
+        def get(*args)
+          "0.1\n"
+        end
+      end
       @player = MMPlayer::Player.new
-      @mplayer = Object.new
+      @mplayer = MPlayer.new
       @player.stubs(:ensure_player).returns(@mplayer)
       @player.instance_variable_set("@player", @mplayer)
-    end
-
-    teardown do
-      @player.unstub(:ensure_player)
+      @player.send(:ensure_player, "")
     end
 
     context "#mplayer_send" do
 
       setup do
-        @player.send(:ensure_player, "")
         @mplayer.expects(:hello).once.returns(true)
         @mplayer.expects(:send).once.with(:hello).returns(true)
       end
@@ -50,26 +51,6 @@ class MMPlayer::PlayerTest < Minitest::Test
 
     end
 
-    context "#poll_mplayer_progress" do
-
-      setup do
-        @mplayer.expects(:get).twice.returns("0.1\n")
-      end
-
-      teardown do
-        @mplayer.unstub(:get)
-      end
-
-      should "generate progress report" do
-        report = @player.send(:poll_mplayer_progress)
-        refute_nil report
-        assert_equal Hash, report.class
-        assert_equal 2, report.size
-        assert report.values.all? { |v| v == 0.1 }
-      end
-
-    end
-
     context "#get_percentage" do
 
       should "calcuate percentage" do
@@ -83,43 +64,15 @@ class MMPlayer::PlayerTest < Minitest::Test
 
     context "#progress" do
 
-      setup do
-        @mplayer.expects(:get).twice.returns("0.1\n")
-        @report = @player.send(:progress)
-      end
-
-      teardown do
-        @mplayer.unstub(:get)
-      end
-
-      should "have position and length" do
-        refute_nil @report
-        refute_nil @report[:length]
-        refute_nil @report[:position]
-        assert_equal 0.1, @report[:length]
-        assert_equal 0.1, @report[:position]
-      end
-
-      should "have percentage" do
-        refute_nil @report
-        refute_nil @report[:percent]
-        assert_equal 100, @report[:percent]
-      end
-
     end
 
-    context "#poll_mplayer_value" do
+    context "#poll_mplayer_progress" do
+    end
 
-      setup do
-        @mplayer.expects(:get).once.returns("0.1\n")
-      end
-
-      teardown do
-        @mplayer.unstub(:get)
-      end
+    context "#get_mplayer_float" do
 
       should "convert string to float" do
-        val = @player.send(:poll_mplayer_value, "key")
+        val = @player.send(:get_mplayer_float, "key")
         refute_nil val
         assert_equal Float, val.class
         assert_equal 0.1, val
@@ -130,7 +83,7 @@ class MMPlayer::PlayerTest < Minitest::Test
     context "#play" do
 
       setup do
-        @player.expects(:ensure_player).once
+        @player.expects(:ensure_player).once.returns(@mplayer)
         @mplayer.expects(:load_file).once
       end
 
