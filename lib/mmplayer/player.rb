@@ -50,16 +50,7 @@ module MMPlayer
       if @player.nil? && MPlayer::Slave.method_defined?(method)
         # warn
       else
-        cleanup_messages
-        thread = Thread.new do
-          begin
-            @player.send(method, *args, &block)
-          rescue Exception => exception
-            Thread.main.raise(exception)
-          end
-        end
-        thread.abort_on_exception = true
-        @mplayer_messages << thread
+        send_mplayer_message { @player.send(method, *args, &block) }
       end
     end
 
@@ -72,8 +63,8 @@ module MMPlayer
 
     private
 
-    # Sweep message threads
-    def cleanup_messages
+    # Sweep for leftover/hanging message threads
+    def sweep_messages
       if @mplayer_messages.empty?
         false
       else
@@ -81,6 +72,21 @@ module MMPlayer
         @mplayer_messages.each(&:kill)
         true
       end
+    end
+
+    # Send mplayer a message async
+    def send_mplayer_message(&block)
+      sweep_messages
+      thread = Thread.new do
+        begin
+          yield
+        rescue Exception => exception
+          Thread.main.raise(exception)
+        end
+      end
+      thread.abort_on_exception = true
+      @mplayer_messages << thread
+      thread
     end
 
     # Get progress percentage from the MPlayer report
@@ -91,24 +97,18 @@ module MMPlayer
 
     # Poll MPlayer for progress information
     def poll_mplayer_progress
-      cleanup_messages
       time = nil
-      thread = Thread.new do
-        begin
-          time = {
-            :length => poll_mplayer_value("time_length"),
-            :position => poll_mplayer_value("time_pos")
-          }
-        rescue Exception => exception
-          Thread.main.raise(exception)
-        end
+      send_mplayer_message do
+        time = {
+          :length => get_mplayer_float("time_length"),
+          :position => get_mplayer_float("time_pos")
+        }
       end
-      @mplayer_messages << thread
       time
     end
 
     # Poll a single MPlayer value for the given key
-    def poll_mplayer_value(key)
+    def get_mplayer_float(key)
       @player.get(key).strip.to_f
     end
 
