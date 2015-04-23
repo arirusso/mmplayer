@@ -57,7 +57,7 @@ module MMPlayer
     private
 
     def get_percentage(report)
-      percent = (time[:position] / time[:length]) * 100
+      percent = (report[:position] / report[:length]) * 100
       percent.round
     end
 
