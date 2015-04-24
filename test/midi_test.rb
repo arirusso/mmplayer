@@ -74,14 +74,14 @@ class MMPlayer::MIDITest < Minitest::Test
       setup do
         # stub out MIDIEye
         @listener = Object.new
-        @listener.stubs(:events).returns([])
+        @listener.stubs(:event).returns([])
         @midi.instance_variable_set("@listener", @listener)
       end
 
       teardown do
         @listener.unstub(:clear)
         @listener.unstub(:on_message)
-        @listener.unstub(:events)
+        @listener.unstub(:event)
         @listener.unstub(:running?)
       end
 
