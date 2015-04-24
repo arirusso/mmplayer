@@ -43,13 +43,13 @@ end
 
 ```
 
-See a full annotated breakdown of this example [here](https://github.com/arirusso/mmplayer/blob/master/examples/simple.rb)
+An annotated breakdown of this example [here](https://github.com/arirusso/mmplayer/blob/master/examples/simple.rb)
 
-See [the MPlayer Man Page](http://www.mplayerhq.hu/DOCS/man/en/mplayer.1.html#GENERAL OPTIONS) for a full list of startup flags
+[The MPlayer Man Page](http://www.mplayerhq.hu/DOCS/man/en/mplayer.1.html#GENERAL OPTIONS) has a full list of startup flags
 
 All MPlayer runtime commands enabled by the [mplayer-ruby](https://rubygems.org/gems/mplayer-ruby) project are available here too. (eg `seek` and `volume` in the example above)
 
-See [the RDOC for mplayer-ruby](http://mplayer-ruby.rubyforge.org/mplayer-ruby/index.html) for a full list of runtime commands
+[The RDOC for mplayer-ruby](http://mplayer-ruby.rubyforge.org/mplayer-ruby/index.html) has a full list of runtime commands
 
 ##Author
 
