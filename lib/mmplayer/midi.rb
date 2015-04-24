@@ -55,7 +55,7 @@ module MMPlayer
     # @param [Fixnum, nil] channel
     # @return [Fixnum, nil]
     def channel=(channel)
-      @listener.events.clear
+      @listener.event.clear
       @channel = channel
       populate_listener if @listener.running?
       @channel
