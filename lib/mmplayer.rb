@@ -25,6 +25,7 @@ module MMPlayer
 
   VERSION = "0.0.1"
 
+  # Shortcut to Context constructor
   def self.new(*args, &block)
     Context.new(*args, &block)
   end
