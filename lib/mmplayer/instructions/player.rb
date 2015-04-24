@@ -5,6 +5,7 @@ module MMPlayer
     # Instructions dealing with the MPlayer
     module Player
 
+      # Add delegators to local player methods
       def self.included(base)
         base.send(:extend, Forwardable)
         base.send(:def_delegators, :@player, :active?, :play, :progress)
