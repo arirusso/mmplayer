@@ -6,8 +6,7 @@ Control [MPlayer](http://en.wikipedia.org/wiki/MPlayer) with MIDI
 
 ## Install
 
-MPlayer needs to be installed.  This can usually be accomplished with a package manager eg `brew install mplayer` depending on what OS you're using
-
+You'll need to install MPlayer before using this.  That can usually be accomplished with a package manager eg `brew install mplayer` depending on what OS you're usina
 This project itself can be installed as a Ruby Gem using 
 
 `gem install mmplayer` 
