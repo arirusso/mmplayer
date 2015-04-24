@@ -1,5 +1,6 @@
 module MMPlayer
 
+  # DSL context for interfacing an instance of MPlayer with MIDI
   class Context
 
     include Helper::Numbers
@@ -11,14 +12,16 @@ module MMPlayer
     # @param [UniMIDI::Input] midi_input
     # @param [Hash] options
     # @option options [String] :mplayer_flags The command-line flags to invoke MPlayer with
+    # @option options [Fixnum] :receive_channel (also: :rx_channel) A MIDI channel to subscribe to. By default, responds to all
     # @yield
     def initialize(midi_input, options = {}, &block)
-      @midi = MIDI.new(midi_input)
+      @midi = MIDI.new(midi_input, :receive_channel => options[:receive_channel] || options[:rx_channel])
       @player = Player.new(:flags => options[:mplayer_flags])
       instance_eval(&block) if block_given?
     end
 
-    # Start the player
+    # Start listening for MIDI
+    # Note that MPlayer will start when Context#play (aka Instructions::Player#play) is called
     # @param [Hash] options
     # @option options [Boolean] :background Whether to run in a background thread
     # @return [Boolean]
@@ -31,16 +34,11 @@ module MMPlayer
       true
     end
 
-    def progress(&block)
-      @progress_callback = block
-    end
-
     # Stop the player
     # @return [Boolean]
     def stop
       @midi.stop
       @player.quit
-      @player_thread.kill unless @player_thread.nil?
       true
     end
 
