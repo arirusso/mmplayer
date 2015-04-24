@@ -6,7 +6,7 @@ Control [MPlayer](http://en.wikipedia.org/wiki/MPlayer) with MIDI
 
 MPlayer is a free, cross-platform, command-line driven, highly configurable, (often) GUI-less open-source media player. 
 
-Enabling MPlayer to be controlled by MIDI opens up a host of possibilities for live live video sample playback, media automation etc
+Enabling MPlayer to be controlled by MIDI opens up a host of possibilities for live video performance, media automation and more
 
 This project provides a Ruby DSL to define realtime interactions between MIDI input and MPlayer
 
