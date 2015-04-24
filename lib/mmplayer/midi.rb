@@ -90,10 +90,10 @@ module MMPlayer
         end
       end
       # Short messages
-      @listener.on_message(:class => MIDIMessage::SystemMessage) do |event|
+      @listener.on_message(:class => MIDIMessage::SystemRealtime) do |event|
         message = event[:message]
         name = message.name.downcase.to_sym
-        unless (callback = @config[:cc][name]).nil?
+        unless (callback = @config[:system][name]).nil?
           callback.call
         end
       end
