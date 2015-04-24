@@ -5,6 +5,7 @@ class MMPlayer::PlayerTest < Minitest::Test
   context "Player" do
 
     setup do
+      # Stub out MPlayer completely
       class MPlayer
         def get(*args)
           "0.1\n"
@@ -14,6 +15,7 @@ class MMPlayer::PlayerTest < Minitest::Test
       @mplayer = MPlayer.new
       @player.stubs(:ensure_player).returns(@mplayer)
       @player.instance_variable_set("@player", @mplayer)
+      @player.instance_variable_set("@player_thread", Thread.new {})
       @player.send(:ensure_player, "")
     end
 
@@ -62,11 +64,30 @@ class MMPlayer::PlayerTest < Minitest::Test
 
     end
 
-    context "#progress" do
+    context "#quit" do
+
+      setup do
+        @mplayer.expects(:quit).once
+        @player.instance_variable_get("@player_thread").expects(:kill).once
+      end
+
+      teardown do
+        @mplayer.unstub(:quit)
+        @player.instance_variable_get("@player_thread").unstub(:kill)
+      end
+
+      should "exit MPlayer and kill the player thread" do
+        assert @player.quit
+      end
 
     end
 
+    context "#progress" do
+      # TODO
+    end
+
     context "#poll_mplayer_progress" do
+      # TODO
     end
 
     context "#get_mplayer_float" do
