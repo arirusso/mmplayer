@@ -4,6 +4,12 @@
 
 Control [MPlayer](http://en.wikipedia.org/wiki/MPlayer) with MIDI
 
+MPlayer is a free, cross-platform, command-line driven, highly configurable, (often) GUI-less open-source media player. 
+
+Adding MIDI control to MPlayer opens up a host of possibilities for live video performance, media automation and more.
+
+This project provides a Ruby DSL to define realtime interactions between MIDI input and MPlayer
+
 ## Install
 
 You'll need to install MPlayer before using this.  That can usually be accomplished with a package manager eg `brew install mplayer` depending on what OS you're using.
@@ -17,8 +23,6 @@ Or if you're using Bundler, add this to your Gemfile
 `gem "mmplayer"`
 
 ## Usage
-
-MMplayer provides a Ruby DSL to define interactions between MIDI input and MPlayer
 
 ```ruby
 require "mmplayer"
