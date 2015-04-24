@@ -1,18 +1,30 @@
 module MMPlayer
 
+  # Wrapper for MIDI functionality
   class MIDI
 
-    attr_accessor :channel
-    attr_reader :config, :listener
+    attr_reader :channel, :config, :listener
 
     # @param [UniMIDI::Input] input
-    def initialize(input)
-      @channel = nil
+    # @param [Hash] options
+    # @option options [Fixnum] :receive_channel A MIDI channel to subscribe to. By default, responds to all
+    def initialize(input, options = {})
+      @channel = options[:receive_channel]
       @config = {
+        :cc => {},
         :note => {},
-        :cc => {}
+        :system => {}
       }
       @listener = MIDIEye::Listener.new(input)
+    end
+
+    # Add a callback for a given MIDI system message
+    # @param [String, Symbol] command The MIDI system command eg :start, :stop
+    # @param [Proc] callback The callback to execute when the given MIDI command is received
+    # @return [Hash]
+    def add_system_callback(command, &callback)
+      @config[:system][command] = callback
+      @config[:system]
     end
 
     # Add a callback for a given MIDI note
@@ -39,22 +51,52 @@ module MMPlayer
       @listener.stop
     end
 
+    # Change the subscribed MIDI channel (or nil for all)
+    # @param [Fixnum, nil] channel
+    # @return [Fixnum, nil]
+    def channel=(channel)
+      @listener.events.clear
+      @channel = channel
+      populate_listener if @listener.running?
+      @channel
+    end
+
     # Start the MIDI listener
     # @return [Boolean]
     def start
-      @listener.on_message(:channel => @channel, :class => MIDIMessage::NoteOn) do |event|
+      populate_listener
+      @listener.start(:background => true)
+      true
+    end
+
+    private
+
+    # Populate the MIDI listener events
+    def populate_listener
+      # Channel messages
+      listener_options = {}
+      # omni by default
+      listener_options[:channel] = @channel unless @channel.nil?
+      @listener.on_message(listener_options.merge(:class => MIDIMessage::NoteOn)) do |event|
         message = event[:message]
         unless (callback = @config[:note][message.note] || @config[:note][message.name]).nil?
           callback.call(message.velocity)
         end
       end
-      @listener.on_message(:channel => @channel, :class => MIDIMessage::ControlChange) do |event|
+      @listener.on_message(listener_options.merge(:class => MIDIMessage::ControlChange)) do |event|
         message = event[:message]
         unless (callback = @config[:cc][message.index] || @config[:cc][message.name]).nil?
           callback.call(message.value)
         end
       end
-      @listener.start(:background => true)
+      # Short messages
+      @listener.on_message(:class => MIDIMessage::SystemMessage) do |event|
+        message = event[:message]
+        name = message.name.downcase.to_sym
+        unless (callback = @config[:cc][name]).nil?
+          callback.call
+        end
+      end
       true
     end
 
