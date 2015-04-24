@@ -1,5 +1,6 @@
 module MMPlayer
 
+  # Wrapper for MPlayer functionality
   class Player
 
     # @param [Hash] options
@@ -59,6 +60,14 @@ module MMPlayer
     def mplayer_respond_to?(method, include_private = false)
       (@player.nil? && MPlayer::Slave.method_defined?(method)) ||
         @player.respond_to?(method)
+    end
+
+    # Cause MPlayer to exit
+    # @return [Boolean]
+    def quit
+      @player.quit
+      @player_thread.kill
+      true
     end
 
     private
