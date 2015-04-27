@@ -120,6 +120,24 @@ class MMPlayer::PlayerTest < Minitest::Test
 
     end
 
+    context "Messenger" do
+
+      context "#throttle?" do
+
+        setup do
+          @messenger = MMPlayer::Player::Messenger.new
+          @limit = MMPlayer::Player::Messenger::FREQUENCY_LIMIT
+        end
+
+        should "respect message frequency" do
+          assert @messenger.send(:throttle?, 1234, 1234 - @limit / 2)
+          refute @messenger.send(:throttle?, 1234, 1234 - @limit * 2)
+        end
+
+      end
+
+    end
+
   end
 
 end
