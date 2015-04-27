@@ -22,7 +22,7 @@ class MMPlayer::ContextTest < Minitest::Test
     context "#start" do
 
       setup do
-        @context.midi.listener.expects(:on_message).times(3)
+        @context.midi.listener.expects(:on_message).once
         @context.midi.listener.expects(:start).once
       end
 
@@ -33,7 +33,7 @@ class MMPlayer::ContextTest < Minitest::Test
 
       should "activate player" do
         assert @context.start(:background => true)
-        @context.stop
+        assert @context.stop
       end
 
     end
@@ -41,7 +41,7 @@ class MMPlayer::ContextTest < Minitest::Test
     context "#stop" do
 
       setup do
-        @context.midi.listener.expects(:on_message).times(3)
+        @context.midi.listener.expects(:on_message).once
         @context.midi.listener.expects(:start).once
         @context.midi.listener.expects(:stop).once
         @context.player.expects(:quit).once
@@ -55,7 +55,7 @@ class MMPlayer::ContextTest < Minitest::Test
       end
 
       should "stop player" do
-        @context.stop
+        assert @context.stop
       end
 
     end

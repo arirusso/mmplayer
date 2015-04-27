@@ -12,7 +12,7 @@ class MMPlayer::MIDITest < Minitest::Test
     context "#start" do
 
       setup do
-        @midi.listener.expects(:on_message).times(3)
+        @midi.listener.expects(:on_message).once
         @midi.listener.expects(:start).once
       end
 
@@ -35,8 +35,8 @@ class MMPlayer::MIDITest < Minitest::Test
       end
 
       should "store callback" do
-        refute_nil @midi.config[:note][10]
-        assert_equal Proc, @midi.config[:note][10].class
+        refute_nil @midi.message_handler.callback[:note][10]
+        assert_equal Proc, @midi.message_handler.callback[:note][10].class
       end
 
     end
@@ -49,8 +49,8 @@ class MMPlayer::MIDITest < Minitest::Test
       end
 
       should "store callback" do
-        refute_nil @midi.config[:system][:start]
-        assert_equal Proc, @midi.config[:system][:start].class
+        refute_nil @midi.message_handler.callback[:system][:start]
+        assert_equal Proc, @midi.message_handler.callback[:system][:start].class
       end
 
     end
@@ -63,8 +63,8 @@ class MMPlayer::MIDITest < Minitest::Test
       end
 
       should "store callback" do
-        refute_nil @midi.config[:cc][2]
-        assert_equal Proc, @midi.config[:cc][2].class
+        refute_nil @midi.message_handler.callback[:cc][2]
+        assert_equal Proc, @midi.message_handler.callback[:cc][2].class
       end
 
     end
@@ -96,11 +96,13 @@ class MMPlayer::MIDITest < Minitest::Test
         should "change channel" do
           assert_equal 3, @midi.channel = 3
           assert_equal 3, @midi.channel
+          refute @midi.omni?
         end
 
         should "set channel nil" do
           assert_equal nil, @midi.channel = nil
           assert_nil @midi.channel
+          assert @midi.omni?
         end
       end
 
@@ -109,17 +111,19 @@ class MMPlayer::MIDITest < Minitest::Test
         setup do
           @listener.stubs(:running?).returns(true)
           @listener.expects(:clear).once
-          @listener.expects(:on_message).times(3)
+          @listener.expects(:on_message).once
         end
 
         should "change channel" do
           assert_equal 3, @midi.channel = 3
           assert_equal 3, @midi.channel
+          refute @midi.omni?
         end
 
         should "set channel nil" do
           assert_equal nil, @midi.channel = nil
           assert_nil @midi.channel
+          assert @midi.omni?
         end
 
       end
@@ -127,4 +131,5 @@ class MMPlayer::MIDITest < Minitest::Test
     end
 
   end
+
 end
