@@ -125,7 +125,7 @@ module MMPlayer
     # @param [String] file The media file to invoke MPlayer with
     # @return [MPlayer::Slave]
     def ensure_player(file)
-      if @player.nil?
+      if @player.nil? && @player_thread.nil?
         @player_thread = Thread.new do
           begin
             @player = MPlayer::Slave.new(file, :options => @flags)
