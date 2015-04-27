@@ -6,9 +6,9 @@ module MMPlayer
     # @param [Hash] options
     # @option options [String] :flags MPlayer command-line flags to use on startup
     def initialize(options = {})
-      @mplayer_messages = []
       @flags = "-fixed-vo -idle"
       @flags += " #{options[:flags]}" unless options[:flags].nil?
+      @messenger = Messenger.new
     end
 
     # Play a media file
@@ -51,7 +51,7 @@ module MMPlayer
       if @player.nil? && MPlayer::Slave.method_defined?(method)
         # warn
       else
-        send_mplayer_message { @player.send(method, *args, &block) }
+        @messenger.send_message { @player.send(method, *args, &block) }
       end
     end
 
@@ -59,7 +59,7 @@ module MMPlayer
     # @return [Boolean]
     def mplayer_respond_to?(method, include_private = false)
       (@player.nil? && MPlayer::Slave.method_defined?(method)) ||
-        @player.respond_to?(method)
+      @player.respond_to?(method)
     end
 
     # Cause MPlayer to exit
@@ -72,32 +72,6 @@ module MMPlayer
 
     private
 
-    # Sweep for leftover/hanging message threads
-    def sweep_messages
-      if @mplayer_messages.empty?
-        false
-      else
-        sleep(0.01)
-        @mplayer_messages.each(&:kill)
-        true
-      end
-    end
-
-    # Send mplayer a message async
-    def send_mplayer_message(&block)
-      sweep_messages
-      thread = Thread.new do
-        begin
-          yield
-        rescue Exception => exception
-          Thread.main.raise(exception)
-        end
-      end
-      thread.abort_on_exception = true
-      @mplayer_messages << thread
-      thread
-    end
-
     # Get progress percentage from the MPlayer report
     def get_percentage(report)
       percent = (report[:position] / report[:length]) * 100
@@ -107,7 +81,7 @@ module MMPlayer
     # Poll MPlayer for progress information
     def poll_mplayer_progress
       time = nil
-      send_mplayer_message do
+      @messenger.send_message do
         time = {
           :length => get_mplayer_float("time_length"),
           :position => get_mplayer_float("time_pos")
@@ -135,6 +109,57 @@ module MMPlayer
         end
         @player_thread.abort_on_exception = true
       end
+    end
+
+    # Handle sending MPlayer messages
+    class Messenger
+
+      FREQUENCY_LIMIT = 0.1 # Throttle messages to 1 per this number seconds
+
+      def initialize
+        @messages = []
+      end
+
+      # Send mplayer a message asynch
+      # @return [Hash, nil]
+      def send_message(&block)
+        timestamp = Time.now.to_f
+        if @messages.empty? || !throttle?(timestamp, @messages.last[:timestamp])
+          thread = Thread.new do
+            begin
+              yield
+            rescue Exception => exception
+              Thread.main.raise(exception)
+            end
+          end
+          thread.abort_on_exception = true
+          record_message(thread, timestamp)
+        end
+      end
+
+      private
+
+      # Should adding a message be throttled for the given timestamp?
+      # @param [Float] timestamp
+      # @param [Float] last_timestamp
+      # @return [Boolean]
+      def throttle?(timestamp, last_timestamp)
+        timestamp - last_timestamp <= FREQUENCY_LIMIT
+      end
+
+      # Record that a message has been sent
+      # @param [Thread] thread
+      # @param [Float] timestamp
+      # @return [Hash]
+      def record_message(thread, timestamp)
+        message = {
+          :thread => thread,
+          :timestamp => timestamp
+        }
+        @messages << message
+        message
+      end
+
     end
 
   end
