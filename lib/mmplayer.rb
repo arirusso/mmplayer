@@ -18,6 +18,7 @@ require "mmplayer/instructions/player"
 
 # classes
 require "mmplayer/context"
+require "mmplayer/message_handler"
 require "mmplayer/midi"
 require "mmplayer/player"
 
