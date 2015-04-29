@@ -124,6 +124,7 @@ module MMPlayer
       # @return [Hash, nil]
       def send_message(&block)
         timestamp = Time.now.to_f
+        # Throttled messages are disregarded
         if @messages.empty? || !throttle?(timestamp, @messages.last[:timestamp])
           thread = Thread.new do
             begin
