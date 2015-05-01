@@ -29,7 +29,7 @@ module MMPlayer
     # @return [Boolean, nil]
     def process(channel, message)
       case message
-      when MIDIMessage::SystemRealtime then system_message(message)
+      when MIDIMessage::SystemCommon, MIDIMessage::SystemRealtime then system_message(message)
       else
         channel_message(channel, message)
       end
