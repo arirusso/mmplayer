@@ -49,22 +49,16 @@ module MMPlayer
     # @param [MIDIMessage] message
     # @return [Boolean, nil]
     def note_message(message)
-      callback = callback = @callback[:note][message.note] || @callback[:note][nil]
-      unless callback.nil?
-        callback.call(message.velocity)
-        true
-      end
+      call_callback(:note, message.note, message.velocity) |
+      call_catch_all_callback(:note, message)
     end
 
     # Find and call a cc received callback if it exists
     # @param [MIDIMessage] message
     # @return [Boolean, nil]
     def cc_message(message)
-      callback = @callback[:cc][message.index] || @callback[:cc][nil]
-      unless callback.nil?
-        callback.call(message.value)
-        true
-      end
+      call_callback(:cc, message.index, message.value) |
+        call_catch_all_callback(:cc, message)
     end
 
     # Find and call a system message callback if it exists
@@ -72,10 +66,7 @@ module MMPlayer
     # @return [Boolean, nil]
     def system_message(message)
       name = message.name.downcase.to_sym
-      unless (callback = @callback[:system][name]).nil?
-        callback.call
-        true
-      end
+      call_callback(:system, name)
     end
 
     # Find and call a channel message callback if it exists for the given message and channel
@@ -88,6 +79,28 @@ module MMPlayer
         when MIDIMessage::NoteOn then note_message(message)
         when MIDIMessage::ControlChange then cc_message(message)
         end
+      end
+    end
+
+    private
+
+    # Execute the catch-all callback for the given type if it exists
+    # @param [Symbol] type
+    # @param [MIDIMessage] message
+    # @return [Boolean]
+    def call_catch_all_callback(type, message)
+      call_callback(type, nil, message)
+    end
+
+    # Execute the callback for the given type and key and pass it the given args
+    # @param [Symbol] type
+    # @param [Object] key
+    # @param [*Object] arguments
+    # @return [Boolean]
+    def call_callback(type, key, *arguments)
+      unless (callback = @callback[type][key]).nil?
+        callback.call(*arguments)
+        true
       end
     end
 
