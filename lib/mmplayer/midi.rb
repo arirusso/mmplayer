@@ -27,7 +27,7 @@ module MMPlayer
     # @param [Proc] callback The callback to execute when the given MIDI note is received
     # @return [Hash]
     def add_note_callback(note, &callback)
-      @message_handler.add_callback(:note, note, &callback)
+      @message_handler.add_note_callback(note, &callback)
     end
 
     # Add a callback for a given MIDI control change
