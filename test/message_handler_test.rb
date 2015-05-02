@@ -33,10 +33,14 @@ class MMPlayer::MessageHandlerTest < Minitest::Test
             @var2 = nil
             @catchall = proc { |vel| @var2 = vel }
             @handler.add_callback(:note, nil, &@catchall)
-            @catchall.expects(:call).never
+            @catchall.expects(:call).once
           end
 
-          should "call specific callback" do
+          teardown do
+            @catchall.unstub(:call)
+          end
+
+          should "call both callbacks" do
             assert @handler.send(:note_message, @message)
           end
 
