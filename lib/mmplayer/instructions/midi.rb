@@ -25,7 +25,7 @@ module MMPlayer
       # @param [Fixnum, String] note A MIDI note eg 64 "F4"
       # @param [Proc] callback The callback to execute when a matching message is received
       # @return [Hash]
-      def on_note(note, &callback)
+      def on_note(note = nil, &callback)
         @midi.add_note_callback(note, &callback)
       end
       alias_method :note, :on_note
@@ -34,7 +34,7 @@ module MMPlayer
       # @param [Fixnum] index The MIDI control change index to assign the callback for
       # @param [Proc] callback The callback to execute when a matching message is received
       # @return [Hash]
-      def on_cc(index, &callback)
+      def on_cc(index = nil, &callback)
         @midi.add_cc_callback(index, &callback)
       end
       alias_method :cc, :on_cc
