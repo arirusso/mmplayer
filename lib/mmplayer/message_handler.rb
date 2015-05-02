@@ -49,7 +49,8 @@ module MMPlayer
     # @param [MIDIMessage] message
     # @return [Boolean, nil]
     def note_message(message)
-      unless (callback = @callback[:note][message.note]).nil?
+      callback = callback = @callback[:note][message.note] || @callback[:note][nil]
+      unless callback.nil?
         callback.call(message.velocity)
         true
       end
@@ -59,7 +60,8 @@ module MMPlayer
     # @param [MIDIMessage] message
     # @return [Boolean, nil]
     def cc_message(message)
-      unless (callback = @callback[:cc][message.index] || @callback[:cc][message.name]).nil?
+      callback = @callback[:cc][message.index] || @callback[:cc][nil]
+      unless callback.nil?
         callback.call(message.value)
         true
       end
