@@ -13,14 +13,24 @@ module MMPlayer
       }
     end
 
-    # Add a callback for a given MIDI system message type
+    # Add a callback for a given MIDI message type
     # @param [Symbol] type The MIDI message type (eg :note, :cc)
-    # @param [String, Symbol] key
+    # @param [Fixnum, String] key The ID of the message eg note number/cc index
     # @param [Proc] callback The callback to execute when the given MIDI command is received
     # @return [Hash]
     def add_callback(type, key, &callback)
       @callback[type][key] = callback
       @callback[type]
+    end
+
+    # Add a callback for a given MIDI note
+    # @param [Symbol] type The MIDI message type (eg :note, :cc)
+    # @param [Fixnum, String] note
+    # @param [Proc] callback The callback to execute when the given MIDI command is received
+    # @return [Hash]
+    def add_note_callback(note, &callback)
+      note = MIDIMessage::Constant.value(:note, note) if note.kind_of?(String)
+      add_callback(:note, note, &callback)
     end
 
     # Process a message for the given channel
@@ -39,7 +49,7 @@ module MMPlayer
     # @param [MIDIMessage] message
     # @return [Boolean, nil]
     def note_message(message)
-      unless (callback = @callback[:note][message.note] || @callback[:note][message.name]).nil?
+      unless (callback = @callback[:note][message.note]).nil?
         callback.call(message.velocity)
         true
       end
