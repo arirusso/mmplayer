@@ -35,8 +35,27 @@ class MMPlayer::MessageHandlerTest < Minitest::Test
 
       context "callback doesn't exist" do
 
-        should "do nothing" do
-          refute @handler.send(:note_message, @message)
+        context "has catch-all callback" do
+
+          setup do
+            @var = nil
+            @callback = proc { |vel| @var = vel }
+            @handler.add_callback(:note, nil, &@callback)
+            @callback.expects(:call).once
+          end
+
+          should "call callback" do
+            assert @handler.send(:note_message, @message)
+          end
+
+        end
+
+        context "no catch-all callback" do
+
+          should "do nothing" do
+            refute @handler.send(:note_message, @message)
+          end
+
         end
 
       end
@@ -70,8 +89,27 @@ class MMPlayer::MessageHandlerTest < Minitest::Test
 
       context "callback doesn't exist" do
 
-        should "do nothing" do
-          refute @handler.send(:cc_message, @message)
+        context "has catch-all callback" do
+
+          setup do
+            @var = nil
+            @callback = proc { |vel| @var = vel }
+            @handler.add_callback(:cc, nil, &@callback)
+            @callback.expects(:call).once
+          end
+
+          should "call callback" do
+            assert @handler.send(:cc_message, @message)
+          end
+
+        end
+
+        context "no catch-all callback" do
+
+          should "do nothing" do
+            refute @handler.send(:cc_message, @message)
+          end
+
         end
 
       end
