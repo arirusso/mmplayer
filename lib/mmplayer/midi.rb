@@ -23,7 +23,7 @@ module MMPlayer
     end
 
     # Add a callback for a given MIDI note
-    # @param [Fixnum, String] note The MIDI note to add a callback for eg 64 "E4"
+    # @param [Fixnum, String, nil] note The MIDI note to add a callback for eg 64 "E4"
     # @param [Proc] callback The callback to execute when the given MIDI note is received
     # @return [Hash]
     def add_note_callback(note, &callback)
@@ -31,7 +31,7 @@ module MMPlayer
     end
 
     # Add a callback for a given MIDI control change
-    # @param [Fixnum] index The MIDI control change index to add a callback for eg 10
+    # @param [Fixnum, nil] index The MIDI control change index to add a callback for eg 10
     # @param [Proc] callback The callback to execute when the given MIDI control change is received
     # @return [Hash]
     def add_cc_callback(index, &callback)
