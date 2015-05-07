@@ -32,6 +32,9 @@ require "mmplayer"
     seek(percent, :percent) # That position in the media file is then moved to
   end
 
+  # When a media file ends playing
+  eof { puts "finished" }
+
 end
 
 # Start listening for the MIDI messages described above
