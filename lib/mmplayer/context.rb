@@ -27,10 +27,8 @@ module MMPlayer
     # @return [Boolean]
     def start(options = {})
       @midi.start
-      unless !!options[:background]
-        loop { sleep(0.1) } until @player.active?
-        loop { sleep(0.1) } while @player.active?
-      end
+      @playback_thread = playback_loop
+      @playback_thread.join unless !!options[:background]
       true
     end
 
@@ -40,6 +38,24 @@ module MMPlayer
       @midi.stop
       @player.quit
       true
+    end
+
+    private
+
+    # Main playback loop
+    def playback_loop
+      thread = Thread.new do
+        begin
+          until @player.active?
+            sleep(0.1)
+          end
+          @player.playback_loop
+        rescue Exception => exception
+          Thread.main.raise(exception)
+        end
+      end
+      thread.abort_on_exception = true
+      thread
     end
 
   end

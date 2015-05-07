@@ -9,6 +9,10 @@ module MMPlayer
       @flags = "-fixed-vo -idle"
       @flags += " #{options[:flags]}" unless options[:flags].nil?
       @messenger = Messenger.new
+      @callback = {}
+      @is_playing = false
+      @is_eof_handled = true
+      @player_threads = []
     end
 
     # Play a media file
@@ -19,7 +23,10 @@ module MMPlayer
       if @player.nil?
         false
       else
-        @player.load_file(file)
+        with_player_thread do
+          @player.load_file(file)
+          handle_start
+        end
         true
       end
     end
@@ -27,7 +34,28 @@ module MMPlayer
     # Is MPlayer active?
     # @return [Boolean]
     def active?
-      !@player.nil? && !@player.stdout.gets.nil?
+      !@player.nil?
+    end
+
+    # Handle events while the player is running
+    # @return [Boolean]
+    def playback_loop
+      loop do
+        if @is_playing && !@is_eof_handled && get_player_output.size < 1
+          handle_eof
+        else
+          sleep(0.05)
+        end
+      end
+      true
+    end
+
+    # Add a callback to be called at the end of playback of a media file
+    # @param [Proc] block
+    # @return [Boolean]
+    def add_end_of_file_callback(&block)
+      @callback[:end_of_file] = block
+      true
     end
 
     # Media progress information
@@ -66,11 +94,32 @@ module MMPlayer
     # @return [Boolean]
     def quit
       @player.quit
-      @player_thread.kill
+      @player_threads.each(&:kill)
       true
     end
 
     private
+
+    # Get player output from stdout
+    def get_player_output
+      @player.stdout.gets.inspect.strip.gsub(/(\\n|[\\"])/, '').strip
+    end
+
+    # Handle the end of playback for a single media file
+    def handle_eof
+      @is_eof_handled = true
+      @is_playing = false
+      STDOUT.flush
+      @callback[:end_of_file].call unless @callback[:end_of_file].nil?
+      true
+    end
+
+    # Handle the beginning of playback for a single media file
+    def handle_start
+      loop until get_player_output.size > 1
+      @is_playing = true
+      @is_eof_handled = false
+    end
 
     # Get progress percentage from the MPlayer report
     def get_percentage(report)
@@ -95,19 +144,29 @@ module MMPlayer
       @player.get(key).strip.to_f
     end
 
+    # Call the given block within a new thread
+    def with_player_thread(&block)
+      thread = Thread.new do
+        begin
+          yield
+        rescue Exception => exception
+          Thread.main.raise(exception)
+        end
+      end
+      thread.abort_on_exception = true
+      @player_threads << thread
+      thread
+    end
+
     # Ensure that the MPlayer process is invoked
     # @param [String] file The media file to invoke MPlayer with
     # @return [MPlayer::Slave]
     def ensure_player(file)
-      if @player.nil? && @player_thread.nil?
-        @player_thread = Thread.new do
-          begin
-            @player = MPlayer::Slave.new(file, :options => @flags)
-          rescue Exception => exception
-            Thread.main.raise(exception)
-          end
+      if @player.nil? && @player_threads.empty?
+        with_player_thread do
+          @player = MPlayer::Slave.new(file, :options => @flags)
+          handle_start
         end
-        @player_thread.abort_on_exception = true
       end
     end
 

@@ -5,6 +5,17 @@ module MMPlayer
     # Instructions dealing with the MPlayer
     module Player
 
+      # Assign a callback for when a file finishes playback
+      # @param [Proc] callback The callback to execute when a file finishes playback
+      # @return [Hash]
+      def on_end_of_file(&callback)
+        @player.add_end_of_file_callback(&callback)
+      end
+      alias_method :end_of_file, :on_end_of_file
+      alias_method :eof, :on_end_of_file
+
+      private
+
       # Add delegators to local player methods
       def self.included(base)
         base.send(:extend, Forwardable)
