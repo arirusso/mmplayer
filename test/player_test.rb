@@ -10,12 +10,15 @@ class MMPlayer::PlayerTest < Minitest::Test
         def get(*args)
           "0.1\n"
         end
+
+        def load_file(something)
+        end
       end
       @player = MMPlayer::Player.new
       @mplayer = MPlayer.new
       @player.stubs(:ensure_player).returns(@mplayer)
       @player.instance_variable_set("@player", @mplayer)
-      @player.instance_variable_set("@player_thread", Thread.new {})
+      @player.instance_variable_set("@player_threads", [Thread.new {}])
       @player.send(:ensure_player, "")
     end
 
@@ -68,12 +71,12 @@ class MMPlayer::PlayerTest < Minitest::Test
 
       setup do
         @mplayer.expects(:quit).once
-        @player.instance_variable_get("@player_thread").expects(:kill).once
+        @player.instance_variable_get("@player_threads").first.expects(:kill).once
       end
 
       teardown do
         @mplayer.unstub(:quit)
-        @player.instance_variable_get("@player_thread").unstub(:kill)
+        @player.instance_variable_get("@player_threads").first.unstub(:kill)
       end
 
       should "exit MPlayer and kill the player thread" do
@@ -105,12 +108,10 @@ class MMPlayer::PlayerTest < Minitest::Test
 
       setup do
         @player.expects(:ensure_player).once.returns(@mplayer)
-        @mplayer.expects(:load_file).once
       end
 
       teardown do
         @player.unstub(:ensure_player)
-        @mplayer.unstub(:load_file)
       end
 
       should "lazily invoke mplayer and play" do
