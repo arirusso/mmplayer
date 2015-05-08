@@ -5,17 +5,13 @@ class MMPlayer::PlayerTest < Minitest::Test
   context "Player" do
 
     setup do
-      # Stub out MPlayer completely
-      class MPlayer
-        def get(*args)
-          "0.1\n"
-        end
-
-        def load_file(something)
-        end
-      end
       @player = MMPlayer::Player.new
-      @mplayer = MPlayer.new
+      @mplayer = Object.new
+      @mplayer.stubs(:load_file).returns(true)
+      out = Object.new
+      out.stubs(:gets).returns("")
+      @mplayer.stubs(:stdout).returns(out)
+      @mplayer.stubs(:get).returns("0.1\n")
       @player.stubs(:ensure_player).returns(@mplayer)
       @player.instance_variable_set("@player", @mplayer)
       @player.instance_variable_set("@player_threads", [Thread.new {}])
