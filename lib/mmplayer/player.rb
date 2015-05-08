@@ -10,8 +10,11 @@ module MMPlayer
       @flags += " #{options[:flags]}" unless options[:flags].nil?
       @messenger = Messenger.new
       @callback = {}
-      @is_playing = false
-      @is_eof_handled = true
+      @playback_state = {
+        :eof => false,
+        :play => false,
+        :pause => false
+      }
       @player_threads = []
     end
 
@@ -37,15 +40,27 @@ module MMPlayer
       !@player.nil?
     end
 
+    # Is the player paused?
+    # @return [Boolean]
+    def paused?
+      @playback_state[:pause]
+    end
+    alias_method :pause?, :paused?
+
+    # Toggles pause
+    # @return [Boolean]
+    def pause
+      @playback_state[:pause] = !@playback_state[:pause]
+      @player.pause
+      @playback_state[:pause]
+    end
+
     # Handle events while the player is running
     # @return [Boolean]
     def playback_loop
       loop do
-        if @is_playing && !@is_eof_handled && get_player_output.size < 1
-          handle_eof
-        else
-          sleep(0.05)
-        end
+        handle_eof if eof?
+        sleep(0.05)
       end
       true
     end
@@ -100,6 +115,12 @@ module MMPlayer
 
     private
 
+    # Has the end of a media file been reached?
+    # @return [Boolean]
+    def eof?
+      @playback_state[:play] && !@playback_state[:eof] && !@playback_state[:pause] && get_player_output.size < 1
+    end
+
     # Get player output from stdout
     def get_player_output
       @player.stdout.gets.inspect.strip.gsub(/(\\n|[\\"])/, '').strip
@@ -107,8 +128,8 @@ module MMPlayer
 
     # Handle the end of playback for a single media file
     def handle_eof
-      @is_eof_handled = true
-      @is_playing = false
+      @playback_state[:eof] = true
+      @playback_state[:play] = false
       STDOUT.flush
       @callback[:end_of_file].call unless @callback[:end_of_file].nil?
       true
@@ -117,8 +138,8 @@ module MMPlayer
     # Handle the beginning of playback for a single media file
     def handle_start
       loop until get_player_output.size > 1
-      @is_playing = true
-      @is_eof_handled = false
+      @playback_state[:play] = true
+      @playback_state[:eof] = false
     end
 
     # Get progress percentage from the MPlayer report
