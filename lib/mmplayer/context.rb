@@ -15,8 +15,8 @@ module MMPlayer
     # @option options [Fixnum] :receive_channel (also: :rx_channel) A MIDI channel to subscribe to. By default, responds to all
     # @yield
     def initialize(midi_input, options = {}, &block)
-      @midi = MIDI.new(midi_input, :receive_channel => options[:receive_channel] || options[:rx_channel])
-      @player = Player.new(:flags => options[:mplayer_flags])
+      @midi = MIDI::Wrapper.new(midi_input, :receive_channel => options[:receive_channel] || options[:rx_channel])
+      @player = Player::Wrapper.new(:flags => options[:mplayer_flags])
       instance_eval(&block) if block_given?
     end
 

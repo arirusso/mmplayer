@@ -6,7 +6,7 @@ class MMPlayer::MIDITest < Minitest::Test
 
     setup do
       @input = Object.new
-      @midi = MMPlayer::MIDI.new(@input)
+      @midi = MMPlayer::MIDI::Wrapper.new(@input)
     end
 
     context "#start" do

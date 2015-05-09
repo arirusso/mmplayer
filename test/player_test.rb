@@ -5,7 +5,7 @@ class MMPlayer::PlayerTest < Minitest::Test
   context "Player" do
 
     setup do
-      @player = MMPlayer::Player.new
+      @player = MMPlayer::Player::Wrapper.new
       @mplayer = Object.new
       @mplayer.stubs(:load_file).returns(true)
       out = Object.new

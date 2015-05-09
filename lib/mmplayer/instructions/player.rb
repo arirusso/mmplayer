@@ -5,6 +5,14 @@ module MMPlayer
     # Instructions dealing with the MPlayer
     module Player
 
+      # Assign a callback for updating progress
+      # @param [Proc] callback The callback to execute when progress is updated
+      # @return [Hash]
+      def on_progress(&callback)
+        @player.add_progress_callback(&callback)
+      end
+      alias_method :progress, :on_progress
+
       # Assign a callback for when a file finishes playback
       # @param [Proc] callback The callback to execute when a file finishes playback
       # @return [Hash]
@@ -19,7 +27,7 @@ module MMPlayer
       # Add delegators to local player methods
       def self.included(base)
         base.send(:extend, Forwardable)
-        base.send(:def_delegators, :@player, :active?, :play, :progress)
+        base.send(:def_delegators, :@player, :active?, :play)
       end
 
       # Add all of the MPlayer::Slave methods to the context as instructions
