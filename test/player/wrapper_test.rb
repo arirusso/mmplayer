@@ -1,8 +1,8 @@
 require "helper"
 
-class MMPlayer::PlayerTest < Minitest::Test
+class MMPlayer::Player::WrapperTest < Minitest::Test
 
-  context "Player" do
+  context "Wrapper" do
 
     setup do
       @player = MMPlayer::Player::Wrapper.new
