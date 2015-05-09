@@ -4,12 +4,19 @@ module MMPlayer
 
     extend self
 
-    def new(&block)
+    def new(options = {}, &block)
       thread = ::Thread.new do
         begin
-          yield
+          if options[:timeout] === false
+            yield
+          else
+            duration = options[:timeout] || 1
+            Timeout::timeout(duration) { yield }
+          end
+        rescue Timeout::Error
+          # nothing
         rescue Exception => exception
-          Thread.main.raise(exception)
+          ::Thread.main.raise(exception)
         end
       end
       thread.abort_on_exception = true

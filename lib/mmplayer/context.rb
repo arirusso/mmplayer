@@ -37,6 +37,7 @@ module MMPlayer
     def stop
       @midi.stop
       @player.quit
+      @playback_thread.kill
       true
     end
 
@@ -44,7 +45,7 @@ module MMPlayer
 
     # Main playback loop
     def playback_loop
-      ::MMPlayer::Thread.new do
+      ::MMPlayer::Thread.new(:timeout => false) do
         until @player.active?
           sleep(0.1)
         end
