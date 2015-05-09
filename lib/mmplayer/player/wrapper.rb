@@ -25,7 +25,7 @@ module MMPlayer
         if @player.nil?
           false
         else
-          @threads << ::MMPlayer::Thread.new do
+          @threads << ::MMPlayer::Thread.new(:timeout => 2) do
             @player.load_file(file)
             handle_start
           end
