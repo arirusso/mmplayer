@@ -6,6 +6,11 @@ require "mmplayer/player/wrapper"
 module MMPlayer
 
   module Player
+
+    def self.new(*args)
+      ::MMPlayer::Player::Wrapper.new(*args)
+    end
+
   end
 
 end
