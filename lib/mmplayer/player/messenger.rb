@@ -17,14 +17,7 @@ module MMPlayer
         timestamp = Time.now.to_f
         # Throttled messages are disregarded
         if @messages.empty? || !throttle?(timestamp, @messages.last[:timestamp])
-          thread = Thread.new do
-            begin
-              yield
-            rescue Exception => exception
-              Thread.main.raise(exception)
-            end
-          end
-          thread.abort_on_exception = true
+          thread = ::MMPlayer::Thread.new(&block)
           record_message(thread, timestamp)
         end
       end

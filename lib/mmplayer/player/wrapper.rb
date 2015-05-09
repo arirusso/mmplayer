@@ -25,7 +25,7 @@ module MMPlayer
         if @player.nil?
           false
         else
-          @threads << with_thread do
+          @threads << ::MMPlayer::Thread.new do
             @player.load_file(file)
             handle_start
           end
@@ -52,7 +52,7 @@ module MMPlayer
       def playback_loop
         loop do
           if handle_progress?
-            @threads << with_thread { handle_progress }
+            @threads << ::MMPlayer::Thread.new { handle_progress }
           end
           handle_eof if handle_eof?
           sleep(0.05)
@@ -188,19 +188,6 @@ module MMPlayer
       def get_mplayer_float(key)
         result = @player.get(key)
         result.strip.to_f
-      end
-
-      # Call the given block within a new thread
-      def with_thread(&block)
-        thread = Thread.new do
-          begin
-            yield
-          rescue Exception => exception
-            Thread.main.raise(exception)
-          end
-        end
-        thread.abort_on_exception = true
-        thread
       end
 
     end

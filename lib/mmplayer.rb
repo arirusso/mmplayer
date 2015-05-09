@@ -16,6 +16,7 @@ require "mmplayer/helper/numbers"
 require "mmplayer/instructions"
 require "mmplayer/midi"
 require "mmplayer/player"
+require "mmplayer/thread"
 
 # classes
 require "mmplayer/context"

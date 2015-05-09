@@ -44,18 +44,12 @@ module MMPlayer
 
     # Main playback loop
     def playback_loop
-      thread = Thread.new do
-        begin
-          until @player.active?
-            sleep(0.1)
-          end
-          @player.playback_loop
-        rescue Exception => exception
-          Thread.main.raise(exception)
+      ::MMPlayer::Thread.new do
+        until @player.active?
+          sleep(0.1)
         end
+        @player.playback_loop
       end
-      thread.abort_on_exception = true
-      thread
     end
 
   end

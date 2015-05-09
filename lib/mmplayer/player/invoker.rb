@@ -26,15 +26,10 @@ module MMPlayer
       # @return [MPlayer::Slave]
       def ensure_invoked(file, state)
         if @player.nil? && @thread.nil?
-          @thread = Thread.new do
-            begin
-              @player = MPlayer::Slave.new(file, :options => @flags)
-              state.handle_start
-            rescue Exception => exception
-              Thread.main.raise(exception)
-            end
+          @thread = ::MMPlayer::Thread.new do
+            @player = MPlayer::Slave.new(file, :options => @flags)
+            state.handle_start
           end
-          @thread.abort_on_exception
         end
         @player
       end
