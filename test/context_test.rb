@@ -8,13 +8,13 @@ class MMPlayer::ContextTest < Minitest::Test
       @input = Object.new
       @context = MMPlayer::Context.new(@input)
       @player = Object.new
-      @context.player.stubs(:ensure_player).returns(@player)
+      @context.player.stubs(:player).returns(@player)
       @context.player.stubs(:quit).returns(true)
       @context.player.stubs(:active?).returns(true)
     end
 
     teardown do
-      @context.player.unstub(:ensure_player)
+      @context.player.unstub(:player)
       @context.player.unstub(:quit)
       @context.player.unstub(:active?)
     end

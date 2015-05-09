@@ -12,10 +12,9 @@ class MMPlayer::PlayerTest < Minitest::Test
       out.stubs(:gets).returns("")
       @mplayer.stubs(:stdout).returns(out)
       @mplayer.stubs(:get).returns("0.1\n")
-      @player.stubs(:ensure_player).returns(@mplayer)
+      @player.stubs(:player).returns(@mplayer)
       @player.instance_variable_set("@player", @mplayer)
-      @player.instance_variable_set("@player_threads", [Thread.new {}])
-      @player.send(:ensure_player, "")
+      @player.instance_variable_set("@threads", [Thread.new {}])
     end
 
     context "#mplayer_send" do
@@ -38,7 +37,6 @@ class MMPlayer::PlayerTest < Minitest::Test
     context "#mplayer_respond_to?" do
 
       setup do
-        @player.send(:ensure_player, "")
         @mplayer.expects(:respond_to?).with(:hello).once.returns(true)
       end
 
@@ -67,12 +65,12 @@ class MMPlayer::PlayerTest < Minitest::Test
 
       setup do
         @mplayer.expects(:quit).once
-        @player.instance_variable_get("@player_threads").first.expects(:kill).once
+        @player.instance_variable_get("@threads").first.expects(:kill).once
       end
 
       teardown do
         @mplayer.unstub(:quit)
-        @player.instance_variable_get("@player_threads").first.unstub(:kill)
+        @player.instance_variable_get("@threads").first.unstub(:kill)
       end
 
       should "exit MPlayer and kill the player thread" do
@@ -103,11 +101,11 @@ class MMPlayer::PlayerTest < Minitest::Test
     context "#play" do
 
       setup do
-        @player.expects(:ensure_player).once.returns(@mplayer)
+        @player.expects(:player).once.returns(@mplayer)
       end
 
       teardown do
-        @player.unstub(:ensure_player)
+        @player.unstub(:player)
       end
 
       should "lazily invoke mplayer and play" do

@@ -5,23 +5,23 @@ module MMPlayer
     # Wrapper for MPlayer functionality
     class Wrapper
 
+      attr_reader :player, :state
+
       # @param [Hash] options
       # @option options [String] :flags MPlayer command-line flags to use on startup
       def initialize(options = {})
-        @flags = "-fixed-vo -idle"
-        @flags += " #{options[:flags]}" unless options[:flags].nil?
+        @invoker = Invoker.new(options)
         @messenger = Messenger.new
         @callback = {}
         @state = State.new
         @threads = []
-        @player_thread = nil
       end
 
       # Play a media file
       # @param [String] file
       # @return [Boolean]
       def play(file)
-        ensure_player(file)
+        @player ||= @invoker.ensure_invoked(file, @state)
         if @player.nil?
           false
         else
@@ -36,7 +36,7 @@ module MMPlayer
       # Is MPlayer active?
       # @return [Boolean]
       def active?
-        !@player.nil?
+        !(@player ||= @invoker.player).nil?
       end
 
       # Toggles pause
@@ -100,7 +100,7 @@ module MMPlayer
       def quit
         @player.quit
         @threads.each(&:kill)
-        @player_thread.kill unless @player_thread.nil?
+        @invoker.destroy
         true
       end
 
@@ -201,18 +201,6 @@ module MMPlayer
         end
         thread.abort_on_exception = true
         thread
-      end
-
-      # Ensure that the MPlayer process is invoked
-      # @param [String] file The media file to invoke MPlayer with
-      # @return [MPlayer::Slave]
-      def ensure_player(file)
-        if @player.nil? && @player_thread.nil?
-          @player_thread = with_thread do
-            @player = MPlayer::Slave.new(file, :options => @flags)
-            handle_start
-          end
-        end
       end
 
     end
