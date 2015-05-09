@@ -13,19 +13,12 @@ require "unimidi"
 
 # modules
 require "mmplayer/helper/numbers"
-require "mmplayer/instructions/midi"
-require "mmplayer/instructions/player"
+require "mmplayer/instructions"
 require "mmplayer/midi"
 require "mmplayer/player"
 
 # classes
 require "mmplayer/context"
-require "mmplayer/midi/message_handler"
-require "mmplayer/midi/wrapper"
-require "mmplayer/player/invoker"
-require "mmplayer/player/messenger"
-require "mmplayer/player/state"
-require "mmplayer/player/wrapper"
 
 module MMPlayer
 

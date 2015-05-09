@@ -2,7 +2,7 @@ module MMPlayer
 
   module Player
 
-    # Wrapper for MPlayer functionality
+    # Invoke MPlayer
     class Invoker
 
       attr_reader :player, :thread
