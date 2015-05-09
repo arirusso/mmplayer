@@ -14,7 +14,7 @@ module MMPlayer
             Timeout::timeout(duration) { yield }
           end
         rescue Timeout::Error
-          # nothing
+          ::Thread.current.kill
         rescue Exception => exception
           ::Thread.main.raise(exception)
         end
