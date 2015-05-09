@@ -1,8 +1,8 @@
 require "helper"
 
-class MMPlayer::MIDITest < Minitest::Test
+class MMPlayer::MIDI::WrapperTest < Minitest::Test
 
-  context "MIDI" do
+  context "Wrapper" do
 
     setup do
       @input = Object.new
