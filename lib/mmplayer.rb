@@ -22,7 +22,7 @@ require "mmplayer/context"
 
 module MMPlayer
 
-  VERSION = "0.0.7"
+  VERSION = "0.0.8"
 
   # Shortcut to Context constructor
   def self.new(*args, &block)
