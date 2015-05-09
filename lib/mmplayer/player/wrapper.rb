@@ -147,8 +147,8 @@ module MMPlayer
         if @state.eof_reached?
           STDOUT.flush
           @callback[:end_of_file].call
+          @state.handle_eof
         end
-        @state.handle_eof
         true
       end
 
