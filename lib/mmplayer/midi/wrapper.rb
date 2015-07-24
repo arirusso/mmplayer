@@ -6,7 +6,7 @@ module MMPlayer
 
       attr_reader :channel, :config, :listener, :message_handler
 
-      # @param [UniMIDI::Input] input
+      # @param [UniMIDI::Input, Array<UniMIDI::Input>] input
       # @param [Hash] options
       # @option options [Fixnum] :receive_channel A MIDI channel to subscribe to. By default, responds to all
       def initialize(input, options = {})

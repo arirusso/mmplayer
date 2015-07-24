@@ -9,7 +9,7 @@ module MMPlayer
 
     attr_reader :midi, :player
 
-    # @param [UniMIDI::Input] midi_input
+    # @param [UniMIDI::Input, Array<UniMIDI::Input>] midi_input
     # @param [Hash] options
     # @option options [String] :mplayer_flags The command-line flags to invoke MPlayer with
     # @option options [Fixnum] :receive_channel (also: :rx_channel) A MIDI channel to subscribe to. By default, responds to all
