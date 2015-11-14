@@ -9,6 +9,7 @@ require "forwardable"
 require "midi-eye"
 require "mplayer-ruby"
 require "scale"
+require "timeout"
 require "unimidi"
 
 # modules
