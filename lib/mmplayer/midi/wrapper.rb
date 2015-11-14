@@ -1,10 +1,11 @@
 module MMPlayer
 
   module MIDI
+    
     # Wrapper for MIDI functionality
     class Wrapper
 
-      attr_reader :channel, :config, :listener, :message_handler
+      attr_reader :channel, :listener, :message_handler
 
       # @param [UniMIDI::Input, Array<UniMIDI::Input>] input
       # @param [Hash] options
