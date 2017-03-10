@@ -11,22 +11,74 @@ class MMPlayer::MIDI::WrapperTest < Minitest::Test
 
     context "#handle_new_event" do
 
-      setup do
-        @midi.message_handler.expects(:process).once
-        @event = {
-          :message => MIDIMessage::NoteOn.new(0, 64, 120),
-          :timestamp=> 9266.395330429077
-        }
-        @result = @midi.send(:handle_new_event, @event)
+      context "with no buffer length" do
+
+        setup do
+          @midi.message_handler.expects(:process).once
+          @event = {
+            :message => MIDIMessage::NoteOn.new(0, 64, 120),
+            :timestamp=> 9266.395330429077
+          }
+          @result = @midi.send(:handle_new_event, @event)
+        end
+
+        teardown do
+          @midi.message_handler.unstub(:process)
+        end
+
+        should "return event" do
+          refute_nil @result
+          assert_equal @event, @result
+        end
+
       end
 
-      teardown do
-        @midi.message_handler.unstub(:process)
-      end
+      context "with buffer length" do
 
-      should "return event" do
-        refute_nil @result
-        assert_equal @event, @result
+        context "recent message" do
+
+          setup do
+            @midi.message_handler.expects(:process).once
+            @event = {
+              :message => MIDIMessage::NoteOn.new(0, 64, 120),
+              :timestamp=> 9266.395330429077
+            }
+            @result = @midi.send(:handle_new_event, @event)
+          end
+
+          teardown do
+            @midi.message_handler.unstub(:process)
+          end
+
+          should "return event" do
+            refute_nil @result
+            assert_equal @event, @result
+          end
+
+        end
+
+        context "with too-old message" do
+
+          setup do
+            @midi.instance_variable_set("@buffer_length", 1)
+            @midi.message_handler.expects(:process).never
+            @event = {
+              :message => MIDIMessage::NoteOn.new(0, 64, 120),
+              :timestamp=> 4.395330429077
+            }
+            @result = @midi.send(:handle_new_event, @event)
+          end
+
+          teardown do
+            @midi.message_handler.unstub(:process)
+          end
+
+          should "not return event" do
+            assert_nil @result
+          end
+
+        end
+
       end
 
     end
