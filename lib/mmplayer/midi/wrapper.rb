@@ -63,6 +63,7 @@ module MMPlayer
       # @return [Boolean]
       def start
         initialize_listener
+        @start_time = Time.now.to_i
         @listener.start(:background => true)
         true
       end
@@ -75,11 +76,26 @@ module MMPlayer
 
       private
 
+      # Elapsed time since start in seconds
+      # @return [Fixnum]
+      def now
+        Time.now.to_i - @start_time
+      end
+
+      # Should the given MIDI event be processed or thrown away?
+      # @param [Hash] event
+      # @return [Boolean]
+      def process_event?(event)
+        @buffer_length.nil? ||
+          event[:timestamp].nil? ||
+          event[:timestamp].to_i >= now - @buffer_length
+      end
+
       # Handle a new MIDI event received
       # @param [Hash] event
       # @return [Hash]
       def handle_new_event(event)
-        if @buffer_length.nil? || event[:timestamp].nil? || event[:timestamp] >= Time.now.to_i - @buffer_length
+        if process_event?(event)
           message = event[:message]
           @message_handler.process(@channel, message)
           event

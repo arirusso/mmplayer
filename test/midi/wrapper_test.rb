@@ -61,10 +61,12 @@ class MMPlayer::MIDI::WrapperTest < Minitest::Test
 
           setup do
             @midi.instance_variable_set("@buffer_length", 1)
+            @midi.instance_variable_set("@start_time", Time.now.to_i)
+            sleep(2)
             @midi.message_handler.expects(:process).never
             @event = {
               :message => MIDIMessage::NoteOn.new(0, 64, 120),
-              :timestamp=> 4.395330429077
+              :timestamp => 0.1
             }
             @result = @midi.send(:handle_new_event, @event)
           end
