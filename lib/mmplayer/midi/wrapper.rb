@@ -1,7 +1,7 @@
 module MMPlayer
 
   module MIDI
-    
+
     # Wrapper for MIDI functionality
     class Wrapper
 
@@ -9,9 +9,12 @@ module MMPlayer
 
       # @param [UniMIDI::Input, Array<UniMIDI::Input>] input
       # @param [Hash] options
+      # @option options [Fixnum] :buffer_length Length of MIDI message buffer in seconds
       # @option options [Fixnum] :receive_channel A MIDI channel to subscribe to. By default, responds to all
       def initialize(input, options = {})
+        @buffer_length = options[:buffer_length]
         @channel = options[:receive_channel]
+
         @message_handler = MessageHandler.new
         @listener = MIDIEye::Listener.new(input)
       end
@@ -52,14 +55,14 @@ module MMPlayer
       def channel=(channel)
         @listener.event.clear
         @channel = channel
-        populate_listener if @listener.running?
+        initialize_listener if @listener.running?
         @channel
       end
 
       # Start the MIDI listener
       # @return [Boolean]
       def start
-        populate_listener
+        initialize_listener
         @listener.start(:background => true)
         true
       end
@@ -72,12 +75,22 @@ module MMPlayer
 
       private
 
-      # Populate the MIDI listener callback
-      def populate_listener
-        @listener.on_message do |event|
+      # Handle a new MIDI event received
+      # @param [Hash] event
+      # @return [Hash]
+      def handle_new_event(event)
+        if @buffer_length.nil? || event[:timestamp].nil? || event[:timestamp] >= Time.now.to_i - @buffer_length
           message = event[:message]
           @message_handler.process(@channel, message)
+          event
         end
+      end
+
+      # Populate the MIDI listener callback
+      # @return [MIDIEye::Listener]
+      def initialize_listener
+        @listener.on_message { |event| handle_new_event(event) }
+        @listener
       end
 
     end

@@ -9,6 +9,46 @@ class MMPlayer::MIDI::WrapperTest < Minitest::Test
       @midi = MMPlayer::MIDI::Wrapper.new(@input)
     end
 
+    context "#handle_new_event" do
+
+      setup do
+        @midi.message_handler.expects(:process).once
+        @event = {
+          :message => MIDIMessage::NoteOn.new(0, 64, 120),
+          :timestamp=> 9266.395330429077
+        }
+        @result = @midi.send(:handle_new_event, @event)
+      end
+
+      teardown do
+        @midi.message_handler.unstub(:process)
+      end
+
+      should "return event" do
+        refute_nil @result
+        assert_equal @event, @result
+      end
+
+    end
+
+    context "#initialize_listener" do
+
+      setup do
+        @midi.listener.expects(:on_message).once
+        @result = @midi.send(:initialize_listener)
+      end
+
+      teardown do
+        @midi.listener.unstub(:on_message)
+      end
+
+      should "return listener" do
+        refute_nil @result
+        assert_equal MIDIEye::Listener, @result.class
+      end
+
+    end
+
     context "#start" do
 
       setup do

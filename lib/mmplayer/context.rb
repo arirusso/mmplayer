@@ -11,11 +11,16 @@ module MMPlayer
 
     # @param [UniMIDI::Input, Array<UniMIDI::Input>] midi_input
     # @param [Hash] options
+    # @option options [Fixnum] :midi_buffer_length Length of MIDI message buffer in seconds
     # @option options [String] :mplayer_flags The command-line flags to invoke MPlayer with
     # @option options [Fixnum] :receive_channel (also: :rx_channel) A MIDI channel to subscribe to. By default, responds to all
     # @yield
     def initialize(midi_input, options = {}, &block)
-      @midi = MIDI.new(midi_input, :receive_channel => options[:receive_channel] || options[:rx_channel])
+      midi_options = {
+        :buffer_length => options[:midi_buffer_length],
+        :receive_channel => options[:receive_channel] || options[:rx_channel]
+      }
+      @midi = MIDI.new(midi_input, midi_options)
       @player = Player.new(:flags => options[:mplayer_flags])
       instance_eval(&block) if block_given?
     end
