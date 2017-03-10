@@ -1,7 +1,7 @@
 # MMPlayer
 # Control MPlayer with MIDI
 #
-# (c)2015 Ari Russo
+# (c)2015-2017 Ari Russo
 # Apache 2.0 License
 
 # libs

@@ -63,4 +63,4 @@ All MPlayer runtime commands enabled by the [mplayer-ruby](https://rubygems.org/
 
 Apache 2.0, See LICENSE file
 
-Copyright (c) 2015 [Ari Russo](http://arirusso.com)
+Copyright (c) 2015-2017 [Ari Russo](http://arirusso.com)
