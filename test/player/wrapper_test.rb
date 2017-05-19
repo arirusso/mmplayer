@@ -55,7 +55,7 @@ class MMPlayer::Player::WrapperTest < Minitest::Test
       should "calcuate percentage" do
         val = @player.send(:get_percentage, { :length => 10.1, :position => 5.5 })
         refute_nil val
-        assert_equal Fixnum, val.class
+        assert val.kind_of?(Integer)
         assert_equal 54, val
       end
 

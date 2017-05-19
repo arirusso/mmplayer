@@ -9,8 +9,8 @@ module MMPlayer
 
       # @param [UniMIDI::Input, Array<UniMIDI::Input>] input
       # @param [Hash] options
-      # @option options [Fixnum] :buffer_length Length of MIDI message buffer in seconds
-      # @option options [Fixnum] :receive_channel A MIDI channel to subscribe to. By default, responds to all
+      # @option options [Integer] :buffer_length Length of MIDI message buffer in seconds
+      # @option options [Integer] :receive_channel A MIDI channel to subscribe to. By default, responds to all
       def initialize(input, options = {})
         @buffer_length = options[:buffer_length]
         @channel = options[:receive_channel]
@@ -28,7 +28,7 @@ module MMPlayer
       end
 
       # Add a callback for a given MIDI note
-      # @param [Fixnum, String, nil] note The MIDI note to add a callback for eg 64 "E4"
+      # @param [Integer, String, nil] note The MIDI note to add a callback for eg 64 "E4"
       # @param [Proc] callback The callback to execute when the given MIDI note is received
       # @return [Hash]
       def add_note_callback(note, &callback)
@@ -36,7 +36,7 @@ module MMPlayer
       end
 
       # Add a callback for a given MIDI control change
-      # @param [Fixnum, nil] index The MIDI control change index to add a callback for eg 10
+      # @param [Integer, nil] index The MIDI control change index to add a callback for eg 10
       # @param [Proc] callback The callback to execute when the given MIDI control change is received
       # @return [Hash]
       def add_cc_callback(index, &callback)
@@ -50,8 +50,8 @@ module MMPlayer
       end
 
       # Change the subscribed MIDI channel (or nil for all)
-      # @param [Fixnum, nil] channel
-      # @return [Fixnum, nil]
+      # @param [Integer, nil] channel
+      # @return [Integer, nil]
       def channel=(channel)
         @listener.event.clear
         @channel = channel
@@ -77,7 +77,7 @@ module MMPlayer
       private
 
       # Elapsed time since start in seconds
-      # @return [Fixnum]
+      # @return [Integer]
       def now
         Time.now.to_i - @start_time
       end

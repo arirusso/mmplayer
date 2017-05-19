@@ -16,7 +16,7 @@ module MMPlayer
 
       # Add a callback for a given MIDI message type
       # @param [Symbol] type The MIDI message type (eg :note, :cc)
-      # @param [Fixnum, String] key The ID of the message eg note number/cc index
+      # @param [Integer, String] key The ID of the message eg note number/cc index
       # @param [Proc] callback The callback to execute when the given MIDI command is received
       # @return [Hash]
       def add_callback(type, key, &callback)
@@ -26,7 +26,7 @@ module MMPlayer
 
       # Add a callback for a given MIDI note
       # @param [Symbol] type The MIDI message type (eg :note, :cc)
-      # @param [Fixnum, String] note
+      # @param [Integer, String] note
       # @param [Proc] callback The callback to execute when the given MIDI command is received
       # @return [Hash]
       def add_note_callback(note, &callback)
@@ -35,7 +35,7 @@ module MMPlayer
       end
 
       # Process a message for the given channel
-      # @param [Fixnum, nil] channel
+      # @param [Integer, nil] channel
       # @param [MIDIMessage] message
       # @return [Boolean, nil]
       def process(channel, message)
@@ -71,7 +71,7 @@ module MMPlayer
       end
 
       # Find and call a channel message callback if it exists for the given message and channel
-      # @param [Fixnum, nil] channel
+      # @param [Integer, nil] channel
       # @param [MIDIMessage] message
       # @return [Boolean, nil]
       def channel_message(channel, message)

@@ -6,7 +6,7 @@ module MMPlayer
     module MIDI
 
       # Set the MIDI channel to receive messages on
-      # @param [Fixnum, nil] num The channel number 0-15 or nil for all
+      # @param [Integer, nil] num The channel number 0-15 or nil for all
       def receive_channel(num)
         @midi.channel = num
       end
@@ -22,7 +22,7 @@ module MMPlayer
       alias_method :system, :on_system
 
       # Assign a callback for a given MIDI note
-      # @param [Fixnum, String] note A MIDI note eg 64 "F4" or nil for all
+      # @param [Integer, String] note A MIDI note eg 64 "F4" or nil for all
       # @param [Proc] callback The callback to execute when a matching message is received
       # @return [Hash]
       def on_note(note = nil, &callback)
@@ -31,7 +31,7 @@ module MMPlayer
       alias_method :note, :on_note
 
       # Assign a callback for the given MIDI control change
-      # @param [Fixnum] index The MIDI control change index to assign the callback for or nil for all
+      # @param [Integer] index The MIDI control change index to assign the callback for or nil for all
       # @param [Proc] callback The callback to execute when a matching message is received
       # @return [Hash]
       def on_cc(index = nil, &callback)
