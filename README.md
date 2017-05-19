@@ -51,7 +51,7 @@ end
 
 An annotated breakdown of this example can be found [here](https://github.com/arirusso/mmplayer/blob/master/examples/simple.rb)
 
-[The MPlayer Man Page](http://www.mplayerhq.hu/DOCS/man/en/mplayer.1.html#GENERAL OPTIONS) has a full list of MPlayer startup flags
+[The MPlayer Man Page](http://www.mplayerhq.hu/DOCS/man/en/mplayer.1.html#GENERAL%20OPTIONS) has a full list of MPlayer startup flags
 
 All MPlayer runtime commands enabled by the [mplayer-ruby](https://rubygems.org/gems/mplayer-ruby) project are available here too. (eg `seek` and `volume` in the example above).  [The RDOC for mplayer-ruby](http://mplayer-ruby.rubyforge.org/mplayer-ruby/index.html) has a full list of runtime commands
 
