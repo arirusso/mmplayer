@@ -55,11 +55,7 @@ An annotated breakdown of this example can be found [here](https://github.com/ar
 
 All MPlayer runtime commands enabled by the [mplayer-ruby](https://rubygems.org/gems/mplayer-ruby) project are available here too. (eg `seek` and `volume` in the example above).  [The RDOC for mplayer-ruby](http://mplayer-ruby.rubyforge.org/mplayer-ruby/index.html) has a full list of runtime commands
 
-##Author
-
-* [Ari Russo](http://github.com/arirusso) <ari.russo at gmail.com>
-
-##License
+## License
 
 Apache 2.0, See LICENSE file
 
