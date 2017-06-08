@@ -194,7 +194,7 @@ class MMPlayer::MIDI::WrapperTest < Minitest::Test
         end
 
         should "set channel nil" do
-          assert_equal nil, @midi.channel = nil
+          assert_nil @midi.channel = nil
           assert_nil @midi.channel
           assert @midi.omni?
         end
@@ -215,7 +215,7 @@ class MMPlayer::MIDI::WrapperTest < Minitest::Test
         end
 
         should "set channel nil" do
-          assert_equal nil, @midi.channel = nil
+          assert_nil @midi.channel = nil
           assert_nil @midi.channel
           assert @midi.omni?
         end
