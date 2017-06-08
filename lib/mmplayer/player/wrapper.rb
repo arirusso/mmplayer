@@ -130,7 +130,7 @@ module MMPlayer
 
       # Get player output from stdout
       def get_player_output
-        @player.stdout.gets.inspect.strip.gsub(/(\\n|[\\"])/, '').strip
+        @player.stdout.send(:gets).inspect.strip.gsub(/(\\n|[\\"])/, '').strip
       end
 
       def handle_progress
